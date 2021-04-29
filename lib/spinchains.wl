@@ -1,3 +1,5 @@
+Import["lib/quantum.wl"];
+
 
 (******************************************************************************
 
@@ -37,7 +39,6 @@ V[n_, delta_] := delta toChain[n][pair];
 HAnIsoXY[n_, g_, delta_] := H0[n, g] + V[n, delta];
 
 
-(* ::Input::Initialization:: *)
 PBC[n_,\[CapitalDelta]_]:=Block[
 {
 SigmapNSigmam1=Tensor@@Table[\!\(\*
@@ -220,15 +221,11 @@ Blockto2N[blockList_, mm_] := Module[
 
 
 
-(* ::Input::Initialization:: *)
 OnesBlock[n_,r_]:=Table[1,{i,Binomial[n,r]},{j,Binomial[n,r]}];
 
 
-(* ::Input::Initialization:: *)
 OnesFull[n_]:=SparseArray[Table[Band[{f[n,r],f[n,r]}]->OnesBlock[n,r],{r,0,n}]];
 
-
-(* ::Input::Initialization:: *)
 OnesFullk[n_,k_]:=
 SparseArray[
 Table[
@@ -242,15 +239,10 @@ Band[{f[n,r+Abs[k]],f[n,r]}]->Table[1,{i,Binomial[n,r+Abs[k]]},{j,Binomial[n,r]}
 {2^n,2^n}
 ]/;-n<=k<=n;
 
-
-(* ::Input::Initialization:: *)
 SuperBasisPositions[n_,k_]:=(SuperBasisPositions[n,k]=Position[OnesFullk[n,k]//Vectorise//Normal,1]//Flatten)/;-n<=k<=n;
 
-
-(* ::Input::Initialization:: *)
 SuperBlocksGet[\[ScriptCapitalL]_,n_,k_]:=(\[ScriptCapitalL][[SuperBasisPositions[n,k]]]\[Transpose][[SuperBasisPositions[n,k]]])\[Transpose];
 
-(* ::Input::Initialization:: *)
 SxSxCorrelations[\[Rho]_]:=Module[
 {
 SigmaxSite,
@@ -260,8 +252,6 @@ SigmaxSite=Table[Tensor@@Table[Piecewise[{{Sigmax,i==j},{Id,True}}],{i,n}],{j,n}
 Return[Table[Expect[SigmaxSite[[1]] . SigmaxSite[[i]],\[Rho]],{i,1,n}]]
 ]
 
-
-(* ::Input::Initialization:: *)
 SxSxDualityPlot[rhossDualityList_]:=Block[
 {
 n=Log[2,(rhossDualityList[[1,1,1]]//Dimensions)[[1]]],SxSxCorrList
@@ -274,7 +264,6 @@ TraditionalForm]\)"},Ticks->{Range[1,n],Automatic},PlotStyle->Thick,Mesh->All,Pl
 ];
 
 
-(* ::Input::Initialization:: *)
 EigOpBrute[{evals_,evecs_},J_]:=Block[
 {
 n=evals//Length,
@@ -316,7 +305,6 @@ SuperscriptBox[\(A\), \(i\)], \(\[Dagger]\)])\)\). (You would need to add the un
 ]
 
 
-(* ::Input::Initialization:: *)
 BlochRedfieldBrute[{evals_,evecs_},J_]:=Module[
 {
 n=evals//Length,
@@ -363,8 +351,6 @@ SuperLR[EigOpSite[[i]],SigmamSite[[i]]\[Transpose]]
 {i,Log[2,n]}]]
 ]
 
-
-(* ::Input::Initialization:: *)
 ZeroDeltaEigOp[{evalsList_, evecsList_}, J_] := 
   Module[
    {
@@ -415,8 +401,6 @@ EigOpBlock[oper_,pair_]:=Total[Flatten[
    EigOpSite
 ];
 
-
-(* ::Input::Initialization:: *)
 BlochRedfieldZero\[CapitalDelta][{evalsList_,evecsList_},J_]:=Module[
 {
 outerList=Map[Outer[Times,#,#]&,evecsList,{2}],
@@ -469,8 +453,6 @@ SuperLR[EigOpSite[[i]],SigmamSite[[i]]\[Transpose]]
 {i,n}]]
 ];
 
-
-(* ::Input::Initialization:: *)
 EigVecKet[r_]:=Which[r-2<0,Subscript[\[Epsilon], r]+Subscript[P, r+2],r+2>n, Subscript[\[Epsilon], r]+Subscript[M, r-2],True,Subscript[\[Epsilon], r]+Subscript[M, r-2]+Subscript[P, r+2]]/;0<=r<=n;
 
 (* & h.c. *)
@@ -548,8 +530,6 @@ Mr=M0toNm2~Join~{0,0};
 Return[{Pr,Mr}]
 ];
 
-
-(* ::Input::Initialization:: *)
 EigOpPerturbative[{eEner_,eVec_},\[CapitalDelta]_,J_]:=Block[
 {
 n=Length[eEner]-1,
@@ -635,7 +615,6 @@ Return[U\[Transpose] . # . U&/@OperatorList]
 ];
 
 
-(* ::Input::Initialization:: *)
 BlochRedfieldPert[eSys_,Delta_,J_]:=Block[
 {
 n=(eSys[[1]]//Length)-1,SigmamSite,EigOpSite=EigOpPerturbative[eSys,Delta,J]
@@ -653,8 +632,6 @@ SuperLR[EigOpSite[[i]],SigmamSite[[i]]\[Transpose]]
 ]
 ]
 
-
-(* ::Input::Initialization:: *)
 \[Rho]ss[nn_,g_,\[CapitalDelta]_,J_,option_]:=Module[
 {myH,eigS,SPspec,SPbndwid,my\[ScriptCapitalD],my\[ScriptCapitalL],\[Rho]out,eval},
 
@@ -691,7 +668,6 @@ If[nn<=6,
 Return[\[Rho]out/Tr[\[Rho]out]];
 ];
  
-(* ::Input::Initialization:: *)
 SteadyTimeEvo[n_,g_,\[CapitalDelta]_,{Jname_,J_},method_,tol_:10^-7]:=Module[
 {
 stateData,
@@ -779,8 +755,6 @@ Export["Data/rhoSS_"<>fileNameBase<>".mat",\[Rho]and\[Rho]dot[[1,2]]];
 Return[\[Rho]and\[Rho]dot[[1,2]]];
 ]
 
-
-(* ::Input::Initialization:: *)
 SteadyStateTE[\[ScriptCapitalL]_,tol_:10^-7]:=Module[
 {
 
@@ -834,9 +808,6 @@ Norm[\[ScriptCapitalL] . SparseArray[\[Rho]and\[Rho]dot[[1,2]]]]>tol&
 Return[\[Rho]and\[Rho]dot[[1,2]]];
 ]
 
-
-(* ::Input::Initialization:: *)
-Protect[Overwrite];
 
 SaveDataCall[fTemplate_,ArgList_,flags___]:=Block[
 {
@@ -910,12 +881,9 @@ MapThread[(Export[#1,f@@#2,"MTX"])&,{NonExistentFiles,TuplesToCalculate}]
 ];
 ];
 
-
-(* ::Input::Initialization:: *)
 GeneralFileName[n_,g_,\[CapitalDelta]_,method_,Jname_]:=StringJoin[ToString/@({"[N=",n,"][g=",g,"][\[CapitalDelta]=",\[CapitalDelta],"][method=",method,"]"})]<>"["<>Jname<>"]"
 
 
-(* ::Input::Initialization:: *)
 \[Rho]SSData[dat_,tmax_:0.,normL\[Rho]_:\[Infinity]]:=<|"dat"->dat,"tmax"->tmax,"normL\[Rho]"->normL\[Rho]|>;
 
 \[Rho]SSDataFluc[dat_,tmax_:0.,normL\[Rho]_:\[Infinity],Fluc_:{{},{},{}}]:=<|"dat"->dat,"tmax"->tmax,"normL\[Rho]"->normL\[Rho],"FDT"->Fluc|>
@@ -934,8 +902,6 @@ ParamStr[{NameStr_, Val_}] := "[" <> NameStr <> "=" <> ToString[Val] <> "]";
 
 ParamListString[ExperimentName_, ParamStrList_] := StringJoin[ExperimentName, ##, ".m"]& @@ (ParamStr /@ ParamStrList);
 
-
-(* ::Input::Initialization:: *)
 AdiabaticSweep[LiouvillianFunc_,{varMin_,varMax_,varStep_},flags___]:=
 Module[
 {
@@ -1001,8 +967,6 @@ stateData=processEq[{\[Rho]'[t]==\[ScriptCapitalL] . \[Rho][t],\[Rho][0]==\[Rho]
 Return[res[[2,1]]];
 ]
 
-
-(* ::Input::Initialization:: *)
 TwoTimeCorrelator[\[Rho]ss_,\[ScriptCapitalL]_,X_,Y_,tstep_,tmax_]:=Module[
 {
 stateDataL,stateDataR,
